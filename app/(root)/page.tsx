@@ -1,47 +1,18 @@
 import BlogCard from '@/components/BlogCard';
 import Newsletter from '@/components/Newsletter';
 import SearchForm from '@/components/SearchForm';
-import { Clock, User } from 'lucide-react';
+import { client } from '@/sanity/lib/client';
+import { sanityFetch, SanityLive } from '@/sanity/lib/live';
+import { BLOGS_QUERY } from '@/sanity/lib/queries';
 
 export default async function Home({ searchParams }: { searchParams: Promise<{ query?: string }> }) {
 
   const query = (await searchParams).query;
+  const params = {search:query || null}
 
-  const posts = [
-    {
-      _createdAt: new Date().toISOString(),
-      views: 55,
-      _id: 1,
-      title: "The Future of AI in Content Creation",
-      description: "Exploring how artificial intelligence is revolutionizing the way we create and consume content...",
-      author: { _id: 1, name: "Alex Rivers" },
-      readTime: "5 min",
-      image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=800",
-      category: "Technology"
-    },
-    {
-      _createdAt: new Date().toISOString(),
-      views: 52,
-      _id: 2,
-      title: "Sustainable Living in 2024",
-      description: "Practical tips and insights for adopting an eco-friendly lifestyle in the modern world...",
-      author: { _id: 2, name: "Sarah Chen" },
-      readTime: "4 min",
-      image: "https://images.unsplash.com/photo-1707343843437-caacff5cfa74?auto=format&fit=crop&q=80&w=800",
-      category: "Lifestyle"
-    },
-    {
-      _createdAt: new Date().toISOString(),
-      views: 62,
-      _id: 3,
-      title: "Digital Minimalism",
-      description: "How to maintain focus and productivity in an increasingly connected world...",
-      author: { _id: 3, name: "Mark Thompson" },
-      readTime: "6 min",
-      image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      category: "Productivity"
-    }
-  ];
+  // const posts = await client.fetch(BLOGS_QUERY);
+  // Used here the LIVE API for instant generation of created blogs
+  const {data:posts} = await sanityFetch({query:BLOGS_QUERY ,params})
 
   return (
     <>
@@ -65,7 +36,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ q
               {query ? `Search results for "${query}"` : `Latest Stories`}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {posts.map((post, index) => (
+              {posts.map((post:any) => (
                 <BlogCard key={post._id} post={post} />
               ))}
             </div>
@@ -107,6 +78,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ q
         </section>
         <Newsletter />
       </div>
+      <SanityLive/>
     </>
   );
 }

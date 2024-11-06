@@ -3,7 +3,7 @@ import { Clock, User } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import Link from 'next/link';
 
-interface BlogCardProps {
+export interface BlogCardProps {
     post: {
         _createdAt: string;
         views: number;
